@@ -1,28 +1,48 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
+type stack interface {
+	push(val string)
+	pop() string
+	peek() string
+	isEmpty() bool
+}
+
+// Array Implementation
 type arrstack struct {
-	items []int
+	items []string
 	top   int
 }
 
-func (s *arrstack) push(val int) {
-	s.top++
-	s.items = append(s.items, val)
+func newArrStack() *arrstack {
+	return &arrstack{
+		items: []string{},
+		top:   -1,
+	}
 }
 
-func (s *arrstack) pop() {
+func (s *arrstack) push(val string) {
+	s.items = append(s.items, val)
+	s.top++
+}
+
+func (s *arrstack) pop() string {
+	top := s.peek()
+
 	if s.isEmpty() {
-		return
+		return top
 	}
 
 	s.top--
+	return top
 }
 
-func (s *arrstack) getTop() int {
-	fmt.Printf("\n This is the top: %d", s.top)
-	return s.top
+func (s *arrstack) peek() string {
+	return s.items[s.top]
 }
 
 func (s *arrstack) isEmpty() bool {
@@ -35,8 +55,9 @@ func (s *arrstack) print() {
 	}
 }
 
+// Linked List Implementation
 type node struct {
-	data int
+	data string
 	next *node
 }
 
@@ -45,7 +66,7 @@ type llstack struct {
 	len  int
 }
 
-func (l *llstack) push(val int) {
+func (l *llstack) push(val string) {
 	n := new(node)
 	n.data = val
 	n.next = l.head
@@ -54,19 +75,22 @@ func (l *llstack) push(val int) {
 	l.len++
 }
 
-func (l *llstack) pop() {
+func (l *llstack) pop() string {
+	top := l.peek()
+
 	if l.isEmpty() {
-		return
+		return top
 	}
 
 	head := l.head.next
 	l.head = head
 	l.len--
+
+	return top
 }
 
-func (l *llstack) getTop() int {
-	fmt.Printf("\n This is the top: %d", l.len)
-	return l.len
+func (l *llstack) peek() string {
+	return l.head.data
 }
 
 func (l *llstack) isEmpty() bool {
@@ -82,29 +106,35 @@ func (l *llstack) print() {
 }
 
 func main() {
-	s := new(llstack)
+	ll := newReverser(new(llstack)).reverse("Weirdo")
+	arr := newReverser(newArrStack()).reverse("Weirdo")
 
-	s.push(10)
-	s.push(20)
-	s.push(45)
-	s.push(90)
-	s.push(89)
-	s.pop()
-	s.pop()
-	s.push(900)
-	s.getTop()
-	s.print()
+	fmt.Printf("\nLinkedList: %s", ll)
+	fmt.Printf("\nArray: %s", arr)
 
-	as := new(llstack)
+}
 
-	as.push(10)
-	as.push(20)
-	as.push(45)
-	as.push(90)
-	as.push(89)
-	as.pop()
-	as.pop()
-	as.push(900)
-	as.getTop()
-	as.print()
+// Reverse a string using stack
+type reverser struct {
+	stack
+}
+
+func newReverser(r stack) reverser {
+	return reverser{r}
+}
+
+func (r reverser) reverse(word string) string {
+	split := strings.Split(word, "")
+
+	for _, s := range split {
+		r.push(s)
+	}
+
+	reversed := make([]string, len(split))
+
+	for _, _ = range split {
+		reversed = append(reversed, r.pop())
+	}
+
+	return strings.Join(reversed, "")
 }
