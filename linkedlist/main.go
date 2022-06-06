@@ -17,8 +17,10 @@ func main() {
 	l.insertBack(8)
 	l.insertBack(5)
 	l.insertBack(7)
-	l.insertBack(9)
-	l.insertAt(0, 10)
+	l.insertFront(9)
+	l.insertFront(11)
+	l.deleteAt(1)
+
 	l.reverse()
 	l.print()
 }
@@ -56,13 +58,6 @@ func (l *linkedList) insertBack(val int) {
 func (l *linkedList) insertFront(val int) { //  -> [data | next ] -> [data | next ]
 	n := new(node)
 	n.data = val
-
-	// if the linked list is empty i.e len = 0. Add to head and exit
-	if l.len == 0 {
-		l.head = n
-		l.len++
-		return
-	}
 
 	// set former head as new tail on new node
 	// set new node as head
@@ -121,7 +116,11 @@ func (l *linkedList) deleteAt(pos int) {
 		}
 
 		if pos == 0 {
+			next := starter.next
+
 			starter.next = nil
+			l.head = next
+
 			l.len--
 			return
 		}
